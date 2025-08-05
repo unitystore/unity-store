@@ -12,13 +12,20 @@ local function readJobID()
     end)
 
     if success and response then
-        local trimmed = response:gsub('%"', ""):gsub("%s+", "")
-        return trimmed ~= "" and trimmed or nil
+        local decoded = HttpService:JSONDecode(response)
+        if decoded and decoded.job_id then
+            local trimmed = decoded.job_id:gsub("%s+", "")
+            return trimmed ~= "" and trimmed or nil
+        else
+            prints("⚠️ Campo 'job_id' não encontrado no JSON.")
+        end
+    else
+        prints("❌ Erro ao buscar JobID do site: " .. tostring(response))
     end
 
-    prints("❌ Erro ao buscar JobID do site.")
     return nil
 end
+
 
 local function findTargetGui()
     for _, gui in ipairs(game:GetService("CoreGui"):GetChildren()) do
